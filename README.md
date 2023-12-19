@@ -1,4 +1,3 @@
-
 # API Web ASP.NET Core - Documentación
 
 ## Descripción General
@@ -20,10 +19,65 @@
 
 **En resumen, esta API está diseñada para ser una solución integral para la gestión de usuarios, validación de datos, operaciones de base de datos, manejo de autenticaciones y documentación de servicios, proporcionando así una plataforma segura y eficiente para el desarrollo de aplicaciones web.**
 
-## Requisitos y Configuración Avanzada
+## Requisitos y Configuración
+### Ejecución del Script de la Base de Datos
+Para configurar la base de datos necesaria para esta API, sigue los siguientes pasos:
+
+1. **Descarga el Script SQL**: [ScriptDB.sql](ScriptDB.sql).
+2. **Instalación de SQL Server Management Studio (SSMS)**:
+   - Si aún no tienes SQL Server Management Studio instalado, puedes descargarlo desde el [sitio web oficial de Microsoft](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms).
+3. **Conexión a SQL Server**:
+   - Abre SQL Server Management Studio (`SSMS`).
+   - Conéctate a tu servidor loal o de SQL Server utilizando las credenciales adecuadas.
+4. **Ejecución del Script**:
+   - En SSMS, abre el archivo `ScriptDB.sql` que descargaste en el paso 1. Puedes hacerlo haciendo clic en **"Archivo"** > **"Abrir"** > **"Archivo..."** y seleccionando el archivo `ScriptDB.sql`.
+   - Asegúrate de que estás conectado al servidor `SQL Server` donde deseas ejecutar el script.
+   - Haz clic en el botón "`Ejecutar`" (o presiona `F5`) para ejecutar el script SQL. Esto creará la base de datos y las tablas necesarias para que la API funcione correctamente.
+5. **Verificación de la Base de Datos**:
+   - Puedes verificar que la base de datos se haya creado correctamente utilizando la opción "`Explorador de objetos`" en SSMS. Deberías poder ver la nueva base de datos en la lista de bases de datos.
+
+Con estos pasos, habrás configurado la base de datos necesaria para que la API funcione correctamente. Ahora puedes proceder a ejecutar la API y comenzar a utilizar sus funcionalidades.
+
+### Configuración de Framework y Repositorio
 - [.NET Core SDK](https://dotnet.microsoft.com/download) es necesario para ejecutar el proyecto.
 - Clonar el repositorio y navegar al directorio del proyecto.
 - Ejecutar `dotnet run` desde un terminal o directamente correr el programa en Visual Studio para iniciar la API.
+
+## Configuración Inicial Importante
+
+Si tienes algún error al ejecutar la api, es probable que debas realizar primero los siguientes pasos...
+
+### Configuración de la Conexión a la Base de Datos
+Puedes configurar el proyecto para utilizar tu propia conexión a la base de datos, ya sea con Windows Authentication o con un usuario de SQL Server. Aquí te explicaremos cómo hacerlo:
+
+#### Opción 1: Windows Authentication
+1. Abre el archivo `appsettings.json`.
+2. En la sección `"ConnectionStrings"`, encuentra la clave `"DefaultConnection"`.
+3. Reemplaza el valor de `"DefaultConnection"` con la cadena de conexión adecuada para tu base de datos SQL Server con Windows Authentication. La cadena de conexión debería tener un formato similar a este:
+   ```json
+   "DefaultConnection": "Server=NombreDelServidor;Database=NombreDeLaBaseDeDatos;Trusted_Connection=True;MultipleActiveResultSets=true;" Actualmente se encuentra así:
+   ```json
+       "DefaultConnection": "Data Source=(localdb)\\localsql;Initial Catalog=XYZDatabase;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False" Compara para realizar el cambio correspondiente...
+---
+
+### Opción 2: Usuario de SQL Server
+Para configurar la conexión a la base de datos utilizando un usuario específico de SQL Server, sigue estos pasos:
+1. **Abre el archivo `appsettings.json`**:
+   - Este archivo contiene las configuraciones clave para tu proyecto, incluyendo la cadena de conexión a la base de datos.
+2. **Encuentra la sección `"ConnectionStrings"`**:
+   - Aquí se define la cadena de conexión actual para tu base de datos.
+3. **Modifica la clave `"DefaultConnection"`**:
+   - Reemplaza la cadena de conexión existente con una que utilice credenciales específicas de SQL Server. Por ejemplo:
+     ```json
+     "DefaultConnection": "Server=NombreDelServidor;Database=NombreDeLaBaseDeDatos;User Id=NombreDeUsuario;Password=Contraseña;MultipleActiveResultSets=true;"
+     ```
+     - `NombreDelServidor`: Reemplaza esto con el nombre o dirección IP de tu servidor SQL Server.
+     - `NombreDeLaBaseDeDatos`: El nombre de la base de datos a la que te estás conectando.
+     - `NombreDeUsuario`: Tu nombre de usuario de SQL Server.
+     - `Contraseña`: La contraseña asociada con tu nombre de usuario de SQL Server.
+     Asegúrate de reemplazar estos valores con tu información real de conexión.
+4. **Guarda los Cambios**:
+   - Una vez que hayas actualizado la cadena de conexión, guarda el archivo `appsettings.json`.
 
 ## Detalles de Autenticación
 La API soporta autenticación JWT y autenticación básica. 
@@ -209,6 +263,35 @@ La API utiliza Swagger para documentar y probar los endpoints. Se configura para
 
 ## Modelos de Datos
 - `User`: Modelo para usuarios con propiedades como `Username`, `Password`, `Email`.
+
+
+## Solución de Problemas y Errores Comunes
+Durante el desarrollo y la ejecución de la API, podrías encontrar varios errores. A continuación, se presenta una guía paso a paso para diagnosticar y resolver los errores más comunes.
+
+### Error al cargar la definición de la API
+Si encuentras un error similar al que se muestra en la siguiente imagen, esto indica un problema con la conexión a la base de datos o con la configuración de Swagger.
+
+![Error al cargar la definición de la API](/Errors/NoDBConnection.png)
+
+#### Pasos para resolver el error:
+
+1. **Verifica la Conexión a la Base de Datos:**
+   - Asegúrate de que la cadena de conexión en tu archivo `appsettings.json` sea correcta y que el servidor de la base de datos esté en funcionamiento.
+   - Si estás utilizando autenticación de Windows, verifica que tu usuario tenga los permisos necesarios.
+   - Para las conexiones con credenciales de SQL, confirma que el `UserID` y `Password` sean correctos.
+
+2. **Comprobación de Swagger:**
+   - Revisa que la configuración de Swagger en `Program.cs` esté bien definida y que no haya errores en la ruta del archivo `swagger.json`.
+   - Asegúrate de que los XML de comentarios estén habilitados y correctamente configurados para que Swagger pueda generar la documentación de la API.
+
+3. **Revisión de Logs:**
+   - Consulta los logs de la aplicación para obtener más detalles sobre el error. Esto puede darte pistas sobre la configuración que podría estar causando el problema.
+
+4. **Recompilación del Proyecto:**
+   - A veces, una simple recompilación del proyecto puede resolver problemas temporales o de configuración.
+
+5. **Soporte de la Comunidad:**
+   - Si el error persiste, considera buscar ayuda en foros de la comunidad como Stack Overflow o en la documentación oficial de ASP.NET Core y Swagger.
 
 ---
 
