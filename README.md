@@ -84,10 +84,11 @@ Para poder ejecutar los métodos http en swagger, se debe autenticar usuarios en
 
 ```json
 {
-  "Username": "Usuario1",
-  "Password": "contrasennia1",
-  "Email": "email1@ejemplo.com",
-  "IsActive": true
+  "userID": 1,
+  "username": "Usuario1",
+  "password": "Contrasenna1",
+  "email": "email1@ejemplo.com",
+  "isActive": true
 }
 ```
 
