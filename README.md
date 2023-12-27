@@ -79,8 +79,17 @@ Para configurar la conexión a la base de datos utilizando un usuario específic
 4. **Guarda los Cambios**:
    - Una vez que hayas actualizado la cadena de conexión, guarda el archivo `appsettings.json`.
 
-### Configuración de la Autenticación de Usuarios
-Para poder ejecutar los métodos http en swagger, se debe autenticar usuarios en la API, es necesario proporcionar credenciales válidas. El siguiente objeto JSON es un ejemplo de cómo se deben formatear estas credenciales para el método POST `/api/Users/authenticate` en el controlador de Usuarios:
+## Detalles de Autenticación
+La API soporta autenticación JWT y autenticación básica. 
+
+### JWT Authentication
+- **Configuración**: Utiliza `JwtBearerDefaults.AuthenticationScheme` para la configuración de JWT. La clave de firma (`SymmetricSecurityKey`) se genera a partir de una clave secreta definida en las configuraciones (`AppSettings:SecretKey`), asegurando una validación segura del token.
+- **Validación de Token**: Verifica la firma del token, la ausencia de un emisor o destinatario específico (`ValidateIssuer` y `ValidateAudience` están en `false`), y la validez de la vida útil del token (`ValidateLifetime`).
+- **Protección de Endpoints**: Los tokens JWT se usan para autenticar y autorizar el acceso a los endpoints, como se demuestra en los controladores `UsersController` y `FamilyGroupsController`, donde se aplica el esquema de autenticación JWT.
+- **Generación y Autenticación de Tokens**: En `UsersController`, se implementa un endpoint `authenticate` para autenticar usuarios y generar tokens JWT. Utiliza `JwtSecurityTokenHandler` y `SecurityTokenDescriptor` para crear tokens con una duración específica y una firma basada en la clave secreta configurada.
+- **Validación y Manejo de Usuarios**: Se valida y maneja la información del usuario mediante `UserValidator`, asegurando que los datos de usuario sean correctos antes de permitir operaciones como la creación o actualización de usuarios en la base de datos.
+
+Para poder ejecutar los métodos http en swagger concernientes a este tipo de autenticación, se debe autenticar proporcionando credenciales válidas. El siguiente objeto JSON es un ejemplo de cómo se deben formatear estas credenciales para el método POST `/api/Users/authenticate` en el controlador de Usuarios:
 
 ```json
 {
@@ -92,20 +101,14 @@ Para poder ejecutar los métodos http en swagger, se debe autenticar usuarios en
 }
 ```
 
-## Detalles de Autenticación
-La API soporta autenticación JWT y autenticación básica. 
-
-### JWT Authentication
-- **Configuración**: Utiliza `JwtBearerDefaults.AuthenticationScheme` para la configuración de JWT. La clave de firma (`SymmetricSecurityKey`) se genera a partir de una clave secreta definida en las configuraciones (`AppSettings:SecretKey`), asegurando una validación segura del token.
-- **Validación de Token**: Verifica la firma del token, la ausencia de un emisor o destinatario específico (`ValidateIssuer` y `ValidateAudience` están en `false`), y la validez de la vida útil del token (`ValidateLifetime`).
-- **Protección de Endpoints**: Los tokens JWT se usan para autenticar y autorizar el acceso a los endpoints, como se demuestra en los controladores `UsersController` y `FamilyGroupsController`, donde se aplica el esquema de autenticación JWT.
-- **Generación y Autenticación de Tokens**: En `UsersController`, se implementa un endpoint `authenticate` para autenticar usuarios y generar tokens JWT. Utiliza `JwtSecurityTokenHandler` y `SecurityTokenDescriptor` para crear tokens con una duración específica y una firma basada en la clave secreta configurada.
-- **Validación y Manejo de Usuarios**: Se valida y maneja la información del usuario mediante `UserValidator`, asegurando que los datos de usuario sean correctos antes de permitir operaciones como la creación o actualización de usuarios en la base de datos.
-
 ### Basic Authentication
 - **Implementación**: Implementado a través de `BasicAuthenticationHandler`, que es una clase personalizada para manejar la lógica de autenticación básica.
 - **Proceso de Autenticación**: Requiere un encabezado `Authorization` con credenciales del usuario codificadas en Base64. El handler descodifica las credenciales y las valida contra los registros en la base de datos.
 - **Uso en Controladores**: Ejemplificado en los controladores `PostsController` y `CommentsController`, donde se especifica el esquema de autenticación `BasicAuthentication`. Esto significa que para acceder a los endpoints definidos en estos controladores, se requiere la autenticación básica.
+
+Para poder ejecutar los métodos http en swagger concernientes a este tipo de autenticación, se debe autenticar proporcionando credenciales válidas. Para este caso solo se tienen en cuenta username y password:
+- **username**: Usuario1
+- **password**: Contrasenna1
 
 ## Uso Extendido de Endpoints
 Los endpoints se detallan en la documentación Swagger de la API. Ejemplos:
