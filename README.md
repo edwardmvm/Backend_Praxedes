@@ -82,14 +82,14 @@ Para configurar la conexión a la base de datos utilizando un usuario específic
 ### Configuración de la Autenticación de Usuarios
 Para poder ejecutar los métodos http en swagger, se debe autenticar usuarios en la API, es necesario proporcionar credenciales válidas. El siguiente objeto JSON es un ejemplo de cómo se deben formatear estas credenciales para el método POST `/api/Users/authenticate` en el controlador de Usuarios:
 
-\```json
+```json
 {
   "Username": "Usuario1",
   "Password": "contrasennia1",
   "Email": "email1@ejemplo.com",
   "IsActive": true
 }
-\```
+```
 
 ## Detalles de Autenticación
 La API soporta autenticación JWT y autenticación básica. 
